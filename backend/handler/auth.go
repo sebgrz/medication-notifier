@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"medication-notifier/crypto"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,17 @@ func AuthLogin(ctx *gin.Context) {
 		panic(fmt.Sprintf("login body err: %s", err))
 	}
 
+	// TODO: check user & password
+	/////
+
+	authToken, err := crypto.GenereteToken("1")
+	if err != nil {
+		panic(fmt.Sprintf("login generate token err: %s", err))
+	}
+
+	
 	ctx.JSON(http.StatusOK, LoginResponse{
-		"TODO",
+		authToken,
 		"TODO",
 	})
 }
