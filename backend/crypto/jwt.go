@@ -20,10 +20,10 @@ func (err TokenError) Error() string {
 	return strconv.Itoa(int(err) )
 }
 
-func GenereteToken(userId string) (string, error) {
+func GenereteToken(userId string, durationInMinutes time.Duration) (string, error) {
 	claims := jwt.RegisteredClaims {
 		Subject: userId,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 5)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * durationInMinutes)),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	authToken, err := token.SignedString([]byte(JWT_SECRET))

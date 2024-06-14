@@ -15,6 +15,7 @@ func main() {
 	apiAuth := router.Group("/api/auth")
 	{
 		apiAuth.POST("login", handler.AuthLogin)
+		apiAuth.POST("refresh_token", handler.AuthRefreshToken)
 	}
 
 	// Application endpoints
