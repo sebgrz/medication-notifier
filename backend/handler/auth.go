@@ -23,7 +23,6 @@ func AuthLogin(ctx *gin.Context) {
 		panic(fmt.Sprintf("login generate token err: %s", err))
 	}
 
-	
 	ctx.JSON(http.StatusOK, LoginResponse{
 		authToken,
 		"TODO",
