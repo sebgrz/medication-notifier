@@ -10,6 +10,7 @@ import (
 
 func main() {
 	router := gin.New()
+	handler := handler.New(nil, nil)
 
 	// Auth endpoints
 	apiAuth := router.Group("/api/auth")

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"medication-notifier/crypto"
+	"medication-notifier/utils"
 	"net/http"
 	"strings"
 
@@ -26,6 +27,6 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("user_id", userId)
+		ctx.Set(utils.USER_ID_CONST, userId)
 	}
 }
