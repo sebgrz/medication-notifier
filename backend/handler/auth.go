@@ -47,7 +47,7 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	if tokenErr != nil {
 		panic(fmt.Sprintf("login generate token err: %s", tokenErr))
 	}
-	// TODO: save refresh_token in redis-like storage (with TTL)
+	// save refresh_token in temporary storage
 	token := data.Token{
 		UserId: user.Id,
 		Token: refreshToken,

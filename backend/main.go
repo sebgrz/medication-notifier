@@ -1,6 +1,7 @@
 package main
 
 import (
+	"medication-notifier/data/db"
 	"medication-notifier/handler"
 	"medication-notifier/middleware"
 	"net/http"
@@ -9,8 +10,9 @@ import (
 )
 
 func main() {
+	userDataService := db.NewDummyUsersDataService()
 	router := gin.New()
-	handler := handler.New(nil, nil)
+	handler := handler.New(&userDataService, nil)
 
 	// Auth endpoints
 	apiAuth := router.Group("/api/auth")
