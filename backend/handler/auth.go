@@ -6,6 +6,8 @@ import (
 	"medication-notifier/data"
 	"medication-notifier/utils"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -110,6 +112,27 @@ func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 	})
 }
 
+func (h *HttpHandler) AuthCreateAccount(ctx *gin.Context) {
+	var req CreateAccountRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		panic(fmt.Sprintf("create_account body err: %s", err))
+	}
+
+	// TODO add request validations
+
+	username := strings.ToLower(req.Username)
+	creationTime := time.Now().Unix()
+
+	passwordHash := crypto.GeneratePasswordHash(req.Password, username, int(creationTime))
+	if err := h.userData.Add(req.Username, passwordHash, creationTime); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
+
 // generateTokens return authToken, refreshToken, expirationTimeOfRefreshToken and error
 func generateTokens(userId string) (string, string, int64, error) {
 	authToken, _, err := crypto.GenereteToken(userId, 5) // 5 min
@@ -138,4 +161,9 @@ type RefreshTokenRequest struct {
 type RefreshTokenResponse struct {
 	AuthToken    string `json:"auth_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type CreateAccountRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

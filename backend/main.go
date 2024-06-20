@@ -20,6 +20,7 @@ func main() {
 	{
 		apiAuth.POST("login", handler.AuthLogin)
 		apiAuth.POST("refresh_token", handler.AuthRefreshToken)
+		apiAuth.POST("register", handler.AuthCreateAccount)
 	}
 
 	// Application endpoints

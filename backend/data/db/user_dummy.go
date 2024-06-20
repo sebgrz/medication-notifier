@@ -6,7 +6,6 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type DummyUsersDataService struct {
@@ -19,7 +18,7 @@ func NewDummyUsersDataService() DummyUsersDataService {
 	}
 }
 
-func (s *DummyUsersDataService) Add(username, passwordHash string) error {
+func (s *DummyUsersDataService) Add(username, passwordHash string, creationTime int64) error {
 	username = strings.ToLower(username)
 
 	dbUser := s.fetchUserByUsername(username)
@@ -31,7 +30,7 @@ func (s *DummyUsersDataService) Add(username, passwordHash string) error {
 		Id:           strconv.Itoa(len(s.users) + 1),
 		Username:     username,
 		PasswordHash: passwordHash,
-		CreatedAt:    time.Now().UnixMicro(),
+		CreatedAt:    creationTime,
 	}
 	s.users = append(s.users, user)
 

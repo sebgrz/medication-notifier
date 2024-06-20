@@ -8,7 +8,7 @@ type User struct {
 }
 
 type UsersDataService interface {
-	Add(username, passwordHash string) error
+	Add(username, passwordHash string, creationTime int64) error
 	FindByUsername(string) (*User, error)
 	FindById(string) (*User, error)
 }

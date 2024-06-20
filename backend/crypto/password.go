@@ -11,6 +11,10 @@ func ComparePasswordWithHashedPassword(username, rawPassword, hashedPassword str
 	return rawPasswordHashed == hashedPassword
 }
 
+func GeneratePasswordHash(password, username string, creationTime int) string {
+	return generatePassword(password, username+strconv.Itoa(creationTime))
+}
+
 func generatePassword(password, salt string) string {
 	return string(argon2.IDKey([]byte(password), []byte(salt), 4, 64*1024, 4, 32))
 }
