@@ -49,11 +49,11 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	}
 	// save refresh_token in temporary storage
 	token := data.Token{
-		UserId: user.Id,
-		Token: refreshToken,
+		UserId:         user.Id,
+		Token:          refreshToken,
 		ExpirationTime: time.Now().Add(time.Minute * 7 * 60 * 24).Unix(),
-		ClientInfo: clientInfo,
-		ClientId: "TODO",
+		ClientInfo:     clientInfo,
+		ClientId:       "TODO",
 	}
 	if err := h.tokenData.Add(token); err != nil {
 		ctx.AbortWithStatus(http.StatusForbidden)

@@ -64,7 +64,7 @@ func (s *DummyUsersDataService) fetchUserByUsername(username string) *data.User 
 	idx := slices.IndexFunc(s.users, func(u data.User) bool {
 		return u.Username == username
 	})
-	if idx == 0 {
+	if idx < 0 {
 		return nil
 	}
 
