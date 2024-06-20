@@ -6,7 +6,6 @@ import (
 	"medication-notifier/data"
 	"medication-notifier/utils"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +42,7 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	authToken, refreshToken, tokenErr := generateTokens(user.Id)
+	authToken, refreshToken, expAt, tokenErr := generateTokens(user.Id)
 	if tokenErr != nil {
 		panic(fmt.Sprintf("login generate token err: %s", tokenErr))
 	}
@@ -51,7 +50,7 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	token := data.Token{
 		UserId:         user.Id,
 		Token:          refreshToken,
-		ExpirationTime: time.Now().Add(time.Minute * 7 * 60 * 24).Unix(),
+		ExpirationTime: expAt,
 		ClientInfo:     clientInfo,
 		ClientId:       "TODO",
 	}
@@ -66,7 +65,7 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	})
 }
 
-func (*HttpHandler) AuthRefreshToken(ctx *gin.Context) {
+func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 	var req RefreshTokenRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -79,27 +78,47 @@ func (*HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: check with redis-like storage
-	authToken, refreshToken, tokenErr := generateTokens(userId)
+	// check with temporary storage
+	if _, err := h.tokenData.FindByToken(req.RefreshToken); err != nil {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	authToken, refreshToken, expAt, tokenErr := generateTokens(userId)
 	if tokenErr != nil {
 		panic(fmt.Sprintf("refresh_token generate token err: %s", tokenErr))
 	}
 
-	// TODO: revoke previous and save refresh_token in redis-like storage (with TTL)
+	// revoke previous and save refresh_token in temporary storage (with TTL)
+	clientInfo := ctx.GetString(utils.CLIENT_INFO_CONTEXT_CONST)
+	newToken := data.Token{
+		Token:          refreshToken,
+		UserId:         userId,
+		ExpirationTime: expAt,
+		ClientInfo:     clientInfo,
+		ClientId:       "TODO",
+	}
+	if err = h.tokenData.Add(newToken); err != nil {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	h.tokenData.RemoveByToken(req.RefreshToken)
+
 	ctx.JSON(http.StatusOK, RefreshTokenResponse{
 		authToken,
 		refreshToken,
 	})
 }
 
-func generateTokens(userId string) (string, string, error) {
-	authToken, err := crypto.GenereteToken(userId, 5) // 5 min
+// generateTokens return authToken, refreshToken, expirationTimeOfRefreshToken and error
+func generateTokens(userId string) (string, string, int64, error) {
+	authToken, _, err := crypto.GenereteToken(userId, 5) // 5 min
 	if err != nil {
-		return "", "", err
+		return "", "", -1, err
 	}
-	refreshToken, err := crypto.GenereteToken(userId, 7*60*24) // 7 days
+	refreshToken, exp, err := crypto.GenereteToken(userId, 7*60*24) // 7 days
 
-	return authToken, refreshToken, err
+	return authToken, refreshToken, exp, err
 }
 
 type LoginRequest struct {

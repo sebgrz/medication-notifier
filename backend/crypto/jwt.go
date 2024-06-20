@@ -21,18 +21,19 @@ func (err TokenError) Error() string {
 	return strconv.Itoa(int(err))
 }
 
-func GenereteToken(userId string, durationInMinutes time.Duration) (string, error) {
+func GenereteToken(userId string, durationInMinutes time.Duration) (string, int64, error) {
+	expiresAt := time.Now().Add(time.Minute * durationInMinutes)
 	claims := jwt.RegisteredClaims{
 		Subject:   userId,
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * durationInMinutes)),
+		ExpiresAt: jwt.NewNumericDate(expiresAt),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	authToken, err := token.SignedString([]byte(JWT_SECRET))
 	if err != nil {
-		return "", err
+		return "", -1, err
 	}
 
-	return authToken, nil
+	return authToken, expiresAt.Unix(), nil
 }
 
 func ValidateTokenAndReturnUserId(authToken string) (string, error) {
