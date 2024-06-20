@@ -12,14 +12,14 @@ import (
 const BearerPrefix = "Bearer "
 
 func JwtAuthMiddleware() gin.HandlerFunc {
-	return func (ctx *gin.Context) {
+	return func(ctx *gin.Context) {
 		// check auth_token
 		authHeader := ctx.GetHeader("Authorization")
 		if !strings.HasPrefix(authHeader, BearerPrefix) {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		
+
 		token := strings.TrimPrefix(authHeader, BearerPrefix)
 		userId, err := crypto.ValidateTokenAndReturnUserId(token)
 		if err != nil {

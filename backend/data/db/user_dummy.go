@@ -14,7 +14,7 @@ type DummyUsersDataService struct {
 }
 
 func NewDummyUsersDataService() DummyUsersDataService {
-	return DummyUsersDataService {
+	return DummyUsersDataService{
 		users: []data.User{},
 	}
 }
@@ -28,10 +28,10 @@ func (s *DummyUsersDataService) Add(username, passwordHash string) error {
 	}
 
 	user := data.User{
-		Id: strconv.Itoa(len(s.users) + 1),
-		Username: username,
+		Id:           strconv.Itoa(len(s.users) + 1),
+		Username:     username,
 		PasswordHash: passwordHash,
-		CreatedAt: time.Now().UnixMicro(),
+		CreatedAt:    time.Now().UnixMicro(),
 	}
 	s.users = append(s.users, user)
 

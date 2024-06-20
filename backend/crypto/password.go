@@ -7,7 +7,7 @@ import (
 )
 
 func ComparePasswordWithHashedPassword(username, rawPassword, hashedPassword string, accountCreationTime int) bool {
-	rawPasswordHashed := generatePassword(rawPassword, username + strconv.Itoa(accountCreationTime))
+	rawPasswordHashed := generatePassword(rawPassword, username+strconv.Itoa(accountCreationTime))
 	return rawPasswordHashed == hashedPassword
 }
 
