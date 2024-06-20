@@ -12,8 +12,10 @@ import (
 func main() {
 	userDataService := db.NewDummyUsersDataService()
 	tokenDataService := db.NewDummyTokenDataService()
-	router := gin.New()
 	handler := handler.New(&userDataService, &tokenDataService)
+
+	router := gin.New()
+	router.Use(middleware.ClientInfoMiddleware())
 
 	// Auth endpoints
 	apiAuth := router.Group("/api/auth")

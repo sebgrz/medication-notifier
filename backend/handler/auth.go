@@ -31,7 +31,8 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 		panic(fmt.Sprintf("login body err: %s", err))
 	}
 
-	clientInfo := ctx.GetString(utils.CLIENT_INFO_CONTEXT_CONST)
+	clientInfoRaw, _ := ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
+	clientInfo := clientInfoRaw.(utils.ClientInfo)
 
 	// check user data
 	user, err := h.userData.FindByUsername(req.Username)
@@ -48,13 +49,14 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	if tokenErr != nil {
 		panic(fmt.Sprintf("login generate token err: %s", tokenErr))
 	}
+
 	// save refresh_token in temporary storage
 	token := data.Token{
 		UserId:         user.Id,
 		Token:          refreshToken,
 		ExpirationTime: expAt,
-		ClientInfo:     clientInfo,
-		ClientId:       "TODO",
+		ClientInfo:     clientInfo.Name,
+		ClientId:       clientInfo.Id,
 	}
 	if err := h.tokenData.Add(token); err != nil {
 		ctx.AbortWithStatus(http.StatusForbidden)
@@ -92,13 +94,14 @@ func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 	}
 
 	// revoke previous and save refresh_token in temporary storage (with TTL)
-	clientInfo := ctx.GetString(utils.CLIENT_INFO_CONTEXT_CONST)
+	clientInfoRaw, _ := ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
+	clientInfo := clientInfoRaw.(utils.ClientInfo)
 	newToken := data.Token{
 		Token:          refreshToken,
 		UserId:         userId,
 		ExpirationTime: expAt,
-		ClientInfo:     clientInfo,
-		ClientId:       "TODO",
+		ClientInfo:     clientInfo.Name,
+		ClientId:       clientInfo.Id,
 	}
 	if err = h.tokenData.Add(newToken); err != nil {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
