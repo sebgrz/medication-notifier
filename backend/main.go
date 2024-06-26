@@ -4,7 +4,6 @@ import (
 	"medication-notifier/data/db"
 	"medication-notifier/handler"
 	"medication-notifier/middleware"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,9 +29,10 @@ func main() {
 	apiApp := router.Group("/api")
 	apiApp.Use(middleware.JwtAuthMiddleware())
 	{
-		apiApp.GET("test", func(ctx *gin.Context) {
-			ctx.String(http.StatusOK, "OK")
-		})
+		apiApp.GET("list", handler.ListMedications)
+		apiApp.POST("add", handler.AddMedication)
+		apiApp.POST("remove", handler.RemoveMedication)
+		apiApp.POST("replace", handler.ReplaceMedication)
 	}
 
 	router.Run(":8080")
