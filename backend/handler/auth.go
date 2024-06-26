@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"medication-notifier/crypto"
 	"medication-notifier/data"
 	"medication-notifier/utils"
@@ -12,23 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HttpHandler struct {
-	userData  data.UsersDataService
-	tokenData data.TokenDataService
-}
-
-func New(userData data.UsersDataService, tokenData data.TokenDataService) *HttpHandler {
-	return &HttpHandler{
-		userData,
-		tokenData,
-	}
-}
-
-func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
+func (h *httpHandler) AuthLogin(ctx *gin.Context) {
 	var req LoginRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		panic(fmt.Sprintf("login body err: %s", err))
+		logErrorAndAbort(ctx, "login body err: %s", err)
+		return
 	}
 
 	clientInfoRaw, _ := ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
@@ -47,7 +35,8 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 
 	authToken, refreshToken, expAt, tokenErr := generateTokens(user.Id)
 	if tokenErr != nil {
-		panic(fmt.Sprintf("login generate token err: %s", tokenErr))
+		logErrorAndAbort(ctx, "login generate token err: %s", tokenErr)
+		return
 	}
 
 	// save refresh_token in temporary storage
@@ -69,11 +58,12 @@ func (h *HttpHandler) AuthLogin(ctx *gin.Context) {
 	})
 }
 
-func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
+func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 	var req RefreshTokenRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		panic(fmt.Sprintf("refresh_token body err: %s", err))
+		logErrorAndAbort(ctx, "refresh_token body err: %s", err)
+		return
 	}
 
 	userId, err := crypto.ValidateTokenAndReturnUserId(req.RefreshToken)
@@ -90,7 +80,8 @@ func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 
 	authToken, refreshToken, expAt, tokenErr := generateTokens(userId)
 	if tokenErr != nil {
-		panic(fmt.Sprintf("refresh_token generate token err: %s", tokenErr))
+		logErrorAndAbort(ctx, "refresh_token generate token err: %s", tokenErr)
+		return
 	}
 
 	// revoke previous and save refresh_token in temporary storage (with TTL)
@@ -115,11 +106,12 @@ func (h *HttpHandler) AuthRefreshToken(ctx *gin.Context) {
 	})
 }
 
-func (h *HttpHandler) AuthCreateAccount(ctx *gin.Context) {
+func (h *httpHandler) AuthCreateAccount(ctx *gin.Context) {
 	var req CreateAccountRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		panic(fmt.Sprintf("create_account body err: %s", err))
+		logErrorAndAbort(ctx, "create_account body err: %s", err)
+		return
 	}
 
 	// TODO add request validations

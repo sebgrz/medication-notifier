@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+
 	userDataService := db.NewDummyUsersDataService()
 	tokenDataService := db.NewDummyTokenDataService()
 	handler := handler.New(&userDataService, &tokenDataService)
