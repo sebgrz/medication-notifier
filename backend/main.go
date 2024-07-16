@@ -12,7 +12,8 @@ func main() {
 
 	userDataService := db.NewDummyUsersDataService()
 	tokenDataService := db.NewDummyTokenDataService()
-	handler := handler.New(&userDataService, &tokenDataService)
+	medicationDataService := db.NewDummyMedicationDataService()
+	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
 
 	router := gin.New()
 	router.Use(middleware.ClientInfoMiddleware())
