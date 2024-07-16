@@ -31,8 +31,8 @@ func main() {
 	{
 		apiApp.GET("list", handler.ListMedications)
 		apiApp.POST("add", handler.AddMedication)
-		apiApp.POST("remove", handler.RemoveMedication)
-		apiApp.POST("replace", handler.ReplaceMedication)
+		apiApp.DELETE("remove/:id", handler.RemoveMedication)
+		apiApp.PUT("replace", handler.ReplaceMedication)
 	}
 
 	router.Run(":8080")

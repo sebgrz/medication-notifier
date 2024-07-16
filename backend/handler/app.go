@@ -15,10 +15,9 @@ func (h *httpHandler) AddMedication(ctx *gin.Context) {
 }
 
 func (h *httpHandler) RemoveMedication(ctx *gin.Context) {
-	var req RemoveMedicationRequest
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		logErrorAndAbort(ctx, "remove_medication body err: %s", err)
+	id := ctx.Param("id");
+	if id == "" {
+		logErrorAndAbort(ctx, "remove_medication request require 'id' param")
 		return
 	}
 }
@@ -59,10 +58,6 @@ type AddMedicationRequest struct {
 }
 
 type AddMedicationResponse struct {
-	Id string `json:"id"`
-}
-
-type RemoveMedicationRequest struct {
 	Id string `json:"id"`
 }
 
