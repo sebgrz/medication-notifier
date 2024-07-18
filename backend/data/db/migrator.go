@@ -14,5 +14,4 @@ func RunMigration(address string) {
 		panic(fmt.Sprintf("migration failed: %s", err))
 	}
 	m.Up()
-
 }

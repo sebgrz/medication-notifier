@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"encoding/base64"
 	"strconv"
 
 	"golang.org/x/crypto/argon2"
@@ -16,5 +17,5 @@ func GeneratePasswordHash(password, username string, creationTime int) string {
 }
 
 func generatePassword(password, salt string) string {
-	return string(argon2.IDKey([]byte(password), []byte(salt), 4, 64*1024, 4, 32))
+	return base64.RawStdEncoding.EncodeToString(argon2.IDKey([]byte(password), []byte(salt), 4, 64*1024, 4, 32))
 }

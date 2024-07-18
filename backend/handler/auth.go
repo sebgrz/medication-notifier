@@ -4,6 +4,7 @@ import (
 	"medication-notifier/crypto"
 	"medication-notifier/data"
 	"medication-notifier/utils"
+	"medication-notifier/utils/logger"
 	"net/http"
 	"strings"
 	"time"
@@ -122,6 +123,7 @@ func (h *httpHandler) AuthCreateAccount(ctx *gin.Context) {
 
 	passwordHash := crypto.GeneratePasswordHash(req.Password, username, int(creationTime))
 	if err := h.userData.Add(req.Username, passwordHash, creationTime); err != nil {
+		logger.Error("add_user failed, err: %s", err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}

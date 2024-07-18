@@ -12,7 +12,7 @@ func main() {
 	sqlAddress := "postgres://medication:medication@localhost:5432/medication_db?sslmode=disable"
 	db.RunMigration(sqlAddress)
 
-	userDataService := db.NewDummyUsersDataService()
+	userDataService := db.NewDbUsersDataService(sqlAddress)
 	tokenDataService := db.NewDbTokenDataService("localhost:6379", "")
 	medicationDataService := db.NewDummyMedicationDataService()
 	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
