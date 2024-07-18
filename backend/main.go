@@ -11,7 +11,7 @@ import (
 func main() {
 
 	userDataService := db.NewDummyUsersDataService()
-	tokenDataService := db.NewDummyTokenDataService()
+	tokenDataService := db.NewDbTokenDataService("localhost:6379", "")
 	medicationDataService := db.NewDummyMedicationDataService()
 	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
 

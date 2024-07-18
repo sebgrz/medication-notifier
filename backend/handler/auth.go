@@ -72,8 +72,11 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 		return
 	}
 
+	clientInfoRaw, _ := ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
+	clientInfo := clientInfoRaw.(utils.ClientInfo)
+
 	// check with temporary storage
-	if _, err := h.tokenData.FindByToken(req.RefreshToken); err != nil {
+	if _, err := h.tokenData.FindByToken(req.RefreshToken, clientInfo.Id); err != nil {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
@@ -85,8 +88,6 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 	}
 
 	// revoke previous and save refresh_token in temporary storage (with TTL)
-	clientInfoRaw, _ := ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
-	clientInfo := clientInfoRaw.(utils.ClientInfo)
 	newToken := data.Token{
 		Token:          refreshToken,
 		UserId:         userId,
@@ -98,7 +99,7 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
-	h.tokenData.RemoveByToken(req.RefreshToken)
+	h.tokenData.RemoveByToken(req.RefreshToken, clientInfo.Id)
 
 	ctx.JSON(http.StatusOK, RefreshTokenResponse{
 		authToken,
