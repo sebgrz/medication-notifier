@@ -14,6 +14,7 @@ func ClientInfoMiddleware() gin.HandlerFunc {
 
 		if userAgent == "" || clientId == "" {
 			// TODO log
+			println("user-agent and client-id headers are required")
 			ctx.AbortWithStatus(http.StatusBadRequest)
 			return
 		}

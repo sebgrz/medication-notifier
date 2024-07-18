@@ -10,6 +10,14 @@ import (
 )
 
 func (h *httpHandler) ListMedications(ctx *gin.Context) {
+	var clientDataAny, exists = ctx.Get(utils.CLIENT_INFO_CONTEXT_CONST)
+	if !exists {
+		logErrorAndAbort(ctx, "list_medication failed, clientData is empty")
+		return
+	}
+	clientData := clientDataAny.(utils.ClientInfo)
+	medicaitonList := h.medicationData.FindByUserId(clientData.Id)
+	ctx.JSON(http.StatusOK, medicaitonList)
 }
 
 func (h *httpHandler) AddMedication(ctx *gin.Context) {
@@ -57,6 +65,10 @@ func (h *httpHandler) RemoveMedication(ctx *gin.Context) {
 		logErrorAndAbort(ctx, "remove_medication request require 'id' param")
 		return
 	}
+
+	h.medicationData.RemoveById(id)
+
+	ctx.Status(http.StatusOK)
 }
 
 func (h *httpHandler) ReplaceMedication(ctx *gin.Context) {
@@ -66,6 +78,7 @@ func (h *httpHandler) ReplaceMedication(ctx *gin.Context) {
 		logErrorAndAbort(ctx, "replace_medication body err: %s", err)
 		return
 	}
+
 }
 
 type DayType string
