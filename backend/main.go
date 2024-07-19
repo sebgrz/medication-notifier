@@ -7,6 +7,7 @@ import (
 	"medication-notifier/handler"
 	"medication-notifier/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -26,6 +27,12 @@ func main() {
 	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
 
 	router := gin.New()
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "DELETE", "PUT"},
+		AllowHeaders:     []string{"Origin", "X-Client-Id", "User-Agent"},
+		AllowCredentials: true,
+	}))
 	router.Use(middleware.ClientInfoMiddleware())
 
 	// Auth endpoints
