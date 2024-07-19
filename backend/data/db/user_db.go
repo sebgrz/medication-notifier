@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"medication-notifier/data"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,12 +11,7 @@ type DbUsersDataService struct {
 	conn *pgxpool.Pool
 }
 
-func NewDbUsersDataService(address string) DbUsersDataService {
-	conn, err := pgxpool.New(context.Background(), address)
-	if err != nil {
-		panic(fmt.Sprintf("psql connection failed: %s", err))
-	}
-
+func NewDbUsersDataService(conn *pgxpool.Pool) DbUsersDataService {
 	return DbUsersDataService{
 		conn: conn,
 	}

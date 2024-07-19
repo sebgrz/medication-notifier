@@ -1,20 +1,28 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"medication-notifier/data/db"
 	"medication-notifier/handler"
 	"medication-notifier/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
 	sqlAddress := "postgres://medication:medication@localhost:5432/medication_db?sslmode=disable"
 	db.RunMigration(sqlAddress)
 
-	userDataService := db.NewDbUsersDataService(sqlAddress)
+	conn, err := pgxpool.New(context.Background(), sqlAddress)
+	if err != nil {
+		panic(fmt.Sprintf("psql connection failed: %s", err))
+	}
+
+	userDataService := db.NewDbUsersDataService(conn)
+	medicationDataService := db.NewDbMedicationDataService(conn)
 	tokenDataService := db.NewDbTokenDataService("localhost:6379", "")
-	medicationDataService := db.NewDummyMedicationDataService()
 	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
 
 	router := gin.New()

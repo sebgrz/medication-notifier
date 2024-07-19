@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func (h *httpHandler) ListMedications(ctx *gin.Context) {
@@ -35,14 +34,7 @@ func (h *httpHandler) AddMedication(ctx *gin.Context) {
 	}
 	clientData := clientDataAny.(utils.ClientInfo)
 
-	var id, err = uuid.NewUUID()
-	if err != nil {
-		logErrorAndAbort(ctx, "add_medication generate id failure, %s", err)
-		return
-	}
-
 	medication := data.Medication{
-		Id:        id.String(),
 		UserId:    clientData.Id,
 		Name:      req.Name,
 		Day:       string(req.Day),
