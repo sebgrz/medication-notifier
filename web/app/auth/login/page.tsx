@@ -8,7 +8,7 @@ const Login = () => {
   const router = useRouter();
   return (
     <div>
-      Login:<br />
+      Login:<br/>
       <Formik
         initialValues={{ username: '', password: '' }}
         onSubmit={async (values, { setSubmitting }) => {
