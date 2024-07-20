@@ -39,6 +39,28 @@ class ApiManager {
     return true;
   }
 
+  static authRefresh = async (): Promise<{ auth_token: string, refresh_token: string } | undefined> => {
+    const tokens = ApiManager.getLocalTokens();
+    if (!tokens) {
+      return undefined;
+    }
+    const body = JSON.stringify({ refresh_token: tokens.refresh_token });
+    const headers = ApiManager.getRequiredHeaders();
+
+    try {
+      const resp = await fetch(ApiManager.BASE_URL + "/api/auth/refresh_token",
+        { method: "POST", body: body, headers: headers }
+      );
+      const tokensObj = await resp.json();
+      const tokens = JSON.stringify(tokensObj);
+      ApiManager.storeTokens(tokens);
+
+      return tokensObj;
+    } catch {
+      return undefined;
+    }
+  }
+
   private static getRequiredHeaders = (): { [key: string]: string; } => {
     const clientId = CookieManager.get("client-id") ?? crypto.randomUUID();
     Headers
