@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"medication-notifier/utils/logger"
 	"strconv"
 	"time"
 
@@ -46,6 +47,7 @@ func ValidateTokenAndReturnUserId(authToken string) (string, error) {
 			return "", TOKEN_EXPIRED
 		}
 
+		logger.Error("ValidateTokenAndReturnUserId parse failed, err: %s", err)
 		return "", OTHER
 	}
 

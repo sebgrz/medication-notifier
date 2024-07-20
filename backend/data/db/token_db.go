@@ -63,12 +63,12 @@ func (s *DbTokenDataService) FindByToken(token string, clientId string) (*data.T
 		return nil, cmd.Err()
 	}
 
-	var tokenData *data.Token
-	if err := json.Unmarshal([]byte(cmd.Val()), tokenData); err != nil {
+	var tokenData data.Token
+	if err := json.Unmarshal([]byte(cmd.Val()), &tokenData); err != nil {
 		return nil, err
 	}
 
-	return tokenData, nil
+	return &tokenData, nil
 }
 func (s *DbTokenDataService) FindByUserId(string) []data.Token {
 	panic("UNIMPLEMENTED")

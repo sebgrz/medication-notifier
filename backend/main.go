@@ -30,7 +30,7 @@ func main() {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "DELETE", "PUT"},
-		AllowHeaders:     []string{"Origin", "X-Client-Id", "User-Agent"},
+		AllowHeaders:     []string{"Origin", "X-Client-Id", "User-Agent", "Authorization"},
 		AllowCredentials: true,
 	}))
 	router.Use(middleware.ClientInfoMiddleware())
