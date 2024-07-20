@@ -12,14 +12,15 @@ class CookieManager {
 
   static get = (cookieName: string): string | undefined => {
     const cookies = document.cookie?.split(';');
+
     if (!cookies) {
       return undefined;
     }
 
-    for (let cookie in cookies) {
+    for (let cookie of cookies) {
       const parts = cookie.split('=');
 
-      if (parts[0] === cookieName) {
+      if (parts[0].trim() === cookieName) {
         return parts[1];
       }
     }
