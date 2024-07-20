@@ -1,10 +1,11 @@
 'use client';
 
-import ApiManager from "@/managers/apiManager";
+import { useApiManager } from "@/hooks/useApiManager";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/navigation";
 
 const Register = () => {
+  const api = useApiManager();
   const router = useRouter();
   return (
     <div>
@@ -12,7 +13,7 @@ const Register = () => {
         initialValues={{ username: '', password: '' }}
         onSubmit={async (values, { setSubmitting }) => {
           setSubmitting(true);
-          if (await ApiManager.authRegister(values.username, values.password)) {
+          if (await api.authRegister(values.username, values.password)) {
             router.push("/auth/login");
           }
           setSubmitting(false);

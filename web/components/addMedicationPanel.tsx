@@ -2,17 +2,20 @@
 
 import { useFormik } from "formik";
 import EnumSelector from "./enumSelector";
-import { Day, Medication } from "./medicationsPanel";
+import { Day, Medication, TimeOfDay } from "./medicationsPanel";
+import { useApiManager } from "@/hooks/useApiManager";
 
 const AddMedicationPanel = (props: { addedMedicationsAction: (m: Medication[]) => void }) => {
+	const api = useApiManager();
 	const formik = useFormik({
 		initialValues: {
 			morning: '',
 			midday: '',
 			evening: ''
 		},
-		onSubmit: (values) => {
+		onSubmit: async (values) => {
 			console.info(values);
+			await api.appAddMedication(values.morning, Day.SATURDAY, TimeOfDay.MORNING);
 			formik.resetForm();
 		},
 	});
