@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (h *httpHandler) ListMedications(ctx *gin.Context) {
@@ -35,6 +36,7 @@ func (h *httpHandler) AddMedication(ctx *gin.Context) {
 	clientData := clientDataAny.(utils.ClientInfo)
 
 	medication := data.Medication{
+		Id:        uuid.NewString(),
 		UserId:    clientData.Id,
 		Name:      req.Name,
 		Day:       string(req.Day),
@@ -46,9 +48,7 @@ func (h *httpHandler) AddMedication(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, AddMedicationResponse{
-		Id: medication.Id,
-	})
+	ctx.JSON(http.StatusOK, medication)
 }
 
 func (h *httpHandler) RemoveMedication(ctx *gin.Context) {

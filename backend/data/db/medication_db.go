@@ -19,10 +19,11 @@ func NewDbMedicationDataService(conn *pgxpool.Pool) DbMedicationDataService {
 }
 
 func (s *DbMedicationDataService) Add(med data.Medication) error {
-	sql := "insert into med.medications(user_id, name, day, time_of_day) values ($1, $2, $3, $4)"
+	sql := "insert into med.medications(id, user_id, name, day, time_of_day) values ($1, $2, $3, $4, $5)"
 	_, err := s.conn.Exec(
 		context.Background(),
 		sql,
+		med.Id,
 		med.UserId,
 		med.Name,
 		med.Day,
