@@ -1,4 +1,14 @@
-.medicationPanel * {
+.medicationPanel table {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+.medicationPanel th {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+.medicationPanel td {
 	border: 1px solid black;
 	border-collapse: collapse;
 }

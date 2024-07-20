@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./medicationsPanel.style.module.css";
+import MedicationElement from "./medicationElement";
 
 export enum TimeOfDay {
 	MORNING = "MOR",
@@ -50,9 +51,9 @@ const MedicationsPanel = (props: { data: Medication[] }) => {
 					{Object.entries(Day).map(([k, v]) =>
 						<tr key={k} style={{ border: "1px solid black" }}>
 							<td>{k}</td>
-							<td>{getMedications(v, TimeOfDay.MORNING).map(m => m.name)}</td>
-							<td>{getMedications(v, TimeOfDay.MIDDAY).map(m => m.name)}</td>
-							<td>{getMedications(v, TimeOfDay.EVENING).map(m => m.name)}</td>
+							<td>{getMedications(v, TimeOfDay.MORNING).map(m => <MedicationElement element={m} />)}</td>
+							<td>{getMedications(v, TimeOfDay.MIDDAY).map(m => <MedicationElement element={m} />)}</td>
+							<td>{getMedications(v, TimeOfDay.EVENING).map(m => <MedicationElement element={m} />)}</td>
 						</tr>
 					)}
 				</tbody>
