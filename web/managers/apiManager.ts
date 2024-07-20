@@ -23,6 +23,22 @@ class ApiManager {
     return true;
   }
 
+  static authLogin = async (username: string, password: string): Promise<boolean> => {
+    const body = JSON.stringify({ username: username, password: password });
+    const headers = ApiManager.getRequiredHeaders();
+
+    try {
+      const resp = await fetch(ApiManager.BASE_URL + "/api/auth/login",
+        { method: "POST", body: body, headers: headers }
+      );
+      const tokens = JSON.stringify(await resp.json());
+      ApiManager.storeTokens(tokens);
+    } catch {
+      return false;
+    }
+    return true;
+  }
+
   private static getRequiredHeaders = (): { [key: string]: string; } => {
     const clientId = CookieManager.get("client-id") ?? crypto.randomUUID();
     Headers
@@ -30,6 +46,17 @@ class ApiManager {
       [Header.CLIENT_ID]: clientId,
       [Header.USER_AGENT]: window.navigator.userAgent
     };
+  }
+
+  private static storeTokens = (data: string) =>
+    CookieManager.set("token", data, 7);
+
+  private static getLocalTokens = (): { auth_token: string, refresh_token: string } | undefined => {
+    const cookieToken = CookieManager.get("token");
+    if (!cookieToken) {
+      return undefined;
+    }
+    return JSON.parse(cookieToken);
   }
 }
 
