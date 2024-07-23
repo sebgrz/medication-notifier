@@ -1,13 +1,17 @@
 import { Medication } from "@/components/medicationsPanel";
 import CookieManager from "@/managers/cookieManager";
+import { useRouter } from "next/navigation";
 
 enum Header {
   CLIENT_ID = "X-Client-Id",
-  USER_AGENT = "User-Agent"
+  USER_AGENT = "User-Agent",
+  AUTHORIZATION = "Authorization"
 }
 
 export const useApiManager = () => {
   const BASE_URL = "http://localhost:8080"
+
+  const router = useRouter();
 
   const authRegister = async (username: string, password: string): Promise<boolean> => {
     const body = JSON.stringify({ username: username, password: password });
@@ -64,19 +68,43 @@ export const useApiManager = () => {
 
   const appAddMedication = async (name: string, day: string, timeOfDay: string): Promise<Medication | undefined> => {
     const body = JSON.stringify({ name: name, day: day, time_of_day: timeOfDay });
+    return await tryCallWithReauthorize("POST", "/api/add", body);
+  }
+
+  const tryCallWithReauthorize = async <T,>(method: string, url: string, body?: string): Promise<T | undefined> => {
     const headers = getRequiredHeaders();
+    let tokens = getLocalTokens();
+    if (!tokens) {
+      moveToLoginPage();
+      return;
+    }
+    headers[Header.AUTHORIZATION] = `Bearer ${tokens.auth_token}`;
 
     try {
-      const resp = await fetch(BASE_URL + "/api/auth/login",
-        { method: "POST", body: body, headers: headers }
+      let resp = await fetch(BASE_URL + url,
+        { method: method, body: body, headers: headers }
       );
-      const tokens = JSON.stringify(await resp.json());
-      storeTokens(tokens);
+      if (resp.status === 401) {
+        let tokens = await authRefresh();
+        if (!tokens) {
+          moveToLoginPage();
+          return;
+        }
+
+        // second shot with fresh auth_token
+        headers[Header.AUTHORIZATION] = `Bearer ${tokens.auth_token}`;
+        resp = await fetch(BASE_URL + url,
+          { method: method, body: body, headers: headers }
+        );
+      }
+
+      return await resp.json();
     } catch {
       return undefined;
     }
-    return undefined;
   }
+
+  const moveToLoginPage = () => router.push("/auth/login");
 
   const getRequiredHeaders = (): { [key: string]: string; } => {
     const clientId = CookieManager.get("client-id") ?? crypto.randomUUID();

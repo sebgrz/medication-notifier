@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
 
-const EnumSelector = <TEnum extends object,>(props: { enumType: TEnum, onChange: (v: TEnum) => void }) => {
+const EnumSelector = <TEnum,>(props: { enumType: any, onChange: (v: TEnum) => void }) => {
 	const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		props.onChange((event.target.value as any) as TEnum);
 	}
@@ -8,7 +8,7 @@ const EnumSelector = <TEnum extends object,>(props: { enumType: TEnum, onChange:
 	return (
 		<select onChange={onChange}>
 			{
-				Object.entries(props.enumType).map(([k, _]) => <option key={k} value={k}>{k}</option>)
+				Object.entries(props.enumType as object).map(([k, v]) => <option key={k} value={v}>{k}</option>)
 			}
 		</select>
 	);

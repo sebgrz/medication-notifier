@@ -2,26 +2,35 @@
 
 import { useFormik } from "formik";
 import EnumSelector from "./enumSelector";
-import { Day, Medication, TimeOfDay } from "./medicationsPanel";
+import { Day, Medication } from "./medicationsPanel";
 import { useApiManager } from "@/hooks/useApiManager";
+import { useState } from "react";
 
 const AddMedicationPanel = (props: { addedMedicationsAction: (m: Medication[]) => void }) => {
 	const api = useApiManager();
+	const [day, setDay] = useState(Day.MONDAY);
 	const formik = useFormik({
 		initialValues: {
-			morning: '',
-			midday: '',
-			evening: ''
+			MOR: '',
+			MID: '',
+			EVE: ''
 		},
 		onSubmit: async (values) => {
-			console.info(values);
-			await api.appAddMedication(values.morning, Day.SATURDAY, TimeOfDay.MORNING);
+			const medications: Medication[] = [];
+			const entries = Object.entries(values).filter(([_, v]) => v.trim().length > 0)
+			for (const [k, v] of entries) {
+				const medication = await api.appAddMedication(v, day as Day, k);
+				if (medication) {
+					medications.push(medication);
+				}
+			}
+			props.addedMedicationsAction(medications);
 			formik.resetForm();
 		},
 	});
 
-	const addMedicationSelectDayOnChange = (day: typeof Day) => {
-		console.info(day);
+	const addMedicationSelectDayOnChange = (day: Day) => {
+		setDay(day);
 	}
 
 	return (
@@ -30,9 +39,9 @@ const AddMedicationPanel = (props: { addedMedicationsAction: (m: Medication[]) =
 				<button type="submit" onClick={() => formik.submitForm()}>ADD</button>&nbsp;
 				<EnumSelector enumType={Day} onChange={addMedicationSelectDayOnChange} />
 			</th>
-			<th><input type="text" id="morning" name="morning" onChange={formik.handleChange} value={formik.values.morning} /></th>
-			<th><input type="text" id="midday" name="midday" onChange={formik.handleChange} value={formik.values.midday} /></th>
-			<th><input type="text" id="evening" name="evening" onChange={formik.handleChange} value={formik.values.evening} /></th>
+			<th><input type="text" id="MOR" name="MOR" onChange={formik.handleChange} value={formik.values.MOR} /></th>
+			<th><input type="text" id="MID" name="MID" onChange={formik.handleChange} value={formik.values.MID} /></th>
+			<th><input type="text" id="EVE" name="EVE" onChange={formik.handleChange} value={formik.values.EVE} /></th>
 		</tr>
 	);
 }
