@@ -71,6 +71,43 @@ export const useApiManager = () => {
     return await tryCallWithReauthorize("POST", "/api/add", body);
   }
 
+  const appRemoveMedication = async (id: string): Promise<boolean> => {
+    return await tryCallWithReauthorizeNoResult("DELETE", `/api/remove/${id}`);
+  }
+
+  const tryCallWithReauthorizeNoResult = async <T,>(method: string, url: string, body?: string): Promise<boolean> => {
+    const headers = getRequiredHeaders();
+    let tokens = getLocalTokens();
+    if (!tokens) {
+      moveToLoginPage();
+      return false;
+    }
+    headers[Header.AUTHORIZATION] = `Bearer ${tokens.auth_token}`;
+
+    try {
+      let resp = await fetch(BASE_URL + url,
+        { method: method, body: body, headers: headers }
+      );
+      if (resp.status === 401) {
+        let tokens = await authRefresh();
+        if (!tokens) {
+          moveToLoginPage();
+          return false;
+        }
+
+        // second shot with fresh auth_token
+        headers[Header.AUTHORIZATION] = `Bearer ${tokens.auth_token}`;
+        resp = await fetch(BASE_URL + url,
+          { method: method, body: body, headers: headers }
+        );
+      }
+
+      return resp.ok;
+    } catch {
+      return false;
+    }
+  }
+
   const tryCallWithReauthorize = async <T,>(method: string, url: string, body?: string): Promise<T | undefined> => {
     const headers = getRequiredHeaders();
     let tokens = getLocalTokens();
@@ -126,5 +163,5 @@ export const useApiManager = () => {
     return JSON.parse(cookieToken);
   }
 
-  return { authLogin, authRegister, authRefresh, appAddMedication }
+  return { authLogin, authRegister, authRefresh, appAddMedication, appRemoveMedication }
 }

@@ -44,6 +44,10 @@ const MedicationsPanel = (props: { data: Medication[] }) => {
 		setMedications(medications.concat(newMedications));
 	}
 
+	const removedMedication = (medication: Medication) => {
+		setMedications(medications.filter(f => f !== medication));
+	}
+
 	return (
 		<div className={styles.medicationPanel}>
 			<table style={{ width: "100%" }}>
@@ -60,9 +64,9 @@ const MedicationsPanel = (props: { data: Medication[] }) => {
 					{Object.entries(Day).map(([k, v]) =>
 						<tr key={k} style={{ border: "1px solid black" }}>
 							<td>{k}</td>
-							<td>{getMedications(v, TimeOfDay.MORNING).map(m => <MedicationElement key={m.id} element={m} />)}</td>
-							<td>{getMedications(v, TimeOfDay.MIDDAY).map(m => <MedicationElement key={m.id} element={m} />)}</td>
-							<td>{getMedications(v, TimeOfDay.EVENING).map(m => <MedicationElement key={m.id} element={m} />)}</td>
+							<td>{getMedications(v, TimeOfDay.MORNING).map(m => <MedicationElement key={m.id} element={m} removedMedicationAction={removedMedication} />)}</td>
+							<td>{getMedications(v, TimeOfDay.MIDDAY).map(m => <MedicationElement key={m.id} element={m} removedMedicationAction={removedMedication} />)}</td>
+							<td>{getMedications(v, TimeOfDay.EVENING).map(m => <MedicationElement key={m.id} element={m} removedMedicationAction={removedMedication} />)}</td>
 						</tr>
 					)}
 				</tbody>
