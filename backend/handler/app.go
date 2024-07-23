@@ -3,6 +3,7 @@ package handler
 import (
 	"medication-notifier/data"
 	"medication-notifier/utils"
+	"medication-notifier/utils/logger"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -58,7 +59,11 @@ func (h *httpHandler) RemoveMedication(ctx *gin.Context) {
 		return
 	}
 
-	h.medicationData.RemoveById(id)
+	if err := h.medicationData.RemoveById(id); err != nil {
+		logger.Warn("remove_medication %s failed, err: %s", id, err)
+		ctx.Status(http.StatusNotFound)
+		return
+	}
 
 	ctx.Status(http.StatusOK)
 }
