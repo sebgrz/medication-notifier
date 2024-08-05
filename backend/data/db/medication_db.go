@@ -34,7 +34,7 @@ func (s *DbMedicationDataService) Add(med data.Medication) error {
 
 func (s *DbMedicationDataService) FindByUserId(userId string) []data.Medication {
 	sql := `
-	select id, user_id, name, day, time_of_day from med.medications
+	select id, name, day, time_of_day from med.medications
 	where user_id=$1
 	`
 	result := []data.Medication{}
