@@ -1,13 +1,22 @@
 'use client';
 
-import MedicationsPanel, { Day, Medication, TimeOfDay } from "@/components/medicationsPanel";
-import { useState } from "react";
+import MedicationsPanel, { Medication } from "@/components/medicationsPanel";
+import { useApiManager } from "@/hooks/useApiManager";
+import { useCallback, useEffect, useState } from "react";
 
 const Index = () => {
-  const [medications, setMedications] = useState<Medication[]>([
-    { id: "id-123", name: "apap", day: Day.MONDAY, time_of_day: TimeOfDay.MORNING, user_id: "123" },
-    { id: "id-124", name: "ibuprofen", day: Day.SATURDAY, time_of_day: TimeOfDay.MIDDAY, user_id: "123" },
-  ]);
+  const api = useApiManager();
+  const [medications, setMedications] = useState<Medication[]>([]);
+
+  const loadMedications = useCallback(async () => {
+    const freshMedications = await api.fetchMedications();
+    setMedications(freshMedications);
+  }, []);
+
+  useEffect(() => {
+    loadMedications();
+  }, [loadMedications]);
+
 
   return (
     <main className="flex">

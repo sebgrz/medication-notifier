@@ -75,6 +75,10 @@ export const useApiManager = () => {
     return await tryCallWithReauthorizeNoResult("DELETE", `/api/remove/${id}`);
   }
 
+  const fetchMedications = async (): Promise<Medication[]> => {
+    return await tryCallWithReauthorize("GET", "/api/list") ?? [];
+  }
+
   const tryCallWithReauthorizeNoResult = async <T,>(method: string, url: string, body?: string): Promise<boolean> => {
     const headers = getRequiredHeaders();
     let tokens = getLocalTokens();
@@ -163,5 +167,5 @@ export const useApiManager = () => {
     return JSON.parse(cookieToken);
   }
 
-  return { authLogin, authRegister, authRefresh, appAddMedication, appRemoveMedication }
+  return { authLogin, authRegister, authRefresh, appAddMedication, appRemoveMedication, fetchMedications }
 }
