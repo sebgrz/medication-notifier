@@ -23,8 +23,9 @@ func main() {
 
 	userDataService := db.NewDbUsersDataService(conn)
 	medicationDataService := db.NewDbMedicationDataService(conn)
+	pushTokenDataService := db.NewDbPushTokenDataService(conn)
 	tokenDataService := db.NewDbTokenDataService("localhost:6379", "")
-	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService)
+	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService, &pushTokenDataService)
 
 	router := gin.New()
 	router.Use(cors.New(cors.Config{
@@ -51,6 +52,13 @@ func main() {
 		apiApp.POST("add", handler.AddMedication)
 		apiApp.DELETE("remove/:id", handler.RemoveMedication)
 		apiApp.PUT("replace", handler.ReplaceMedication)
+	}
+
+	// Push endpoints
+	apiPush := router.Group("/api/push")
+	apiPush.Use(middleware.JwtAuthMiddleware())
+	{
+		apiPush.POST("register", handler.PushRegistration)
 	}
 
 	router.Run(":8080")

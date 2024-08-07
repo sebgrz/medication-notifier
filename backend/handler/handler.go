@@ -12,13 +12,15 @@ type httpHandler struct {
 	userData       data.UsersDataService
 	tokenData      data.TokenDataService
 	medicationData data.MedicationDataService
+	pushTokenData  data.PushTokenDataService
 }
 
-func New(userData data.UsersDataService, tokenData data.TokenDataService, medicationData data.MedicationDataService) *httpHandler {
+func New(userData data.UsersDataService, tokenData data.TokenDataService, medicationData data.MedicationDataService, pushTokenData data.PushTokenDataService) *httpHandler {
 	return &httpHandler{
 		userData,
 		tokenData,
 		medicationData,
+		pushTokenData,
 	}
 }
 

@@ -69,7 +69,7 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 
 	userId, err := crypto.ValidateTokenAndReturnUserId(req.RefreshToken)
 	if err != nil {
-		logger.Warn("validate refresh_token failed: %s", err);
+		logger.Warn("validate refresh_token failed: %s", err)
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
@@ -79,7 +79,7 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 
 	// check with temporary storage
 	if _, err := h.tokenData.FindByToken(req.RefreshToken, clientInfo.Id); err != nil {
-		logger.Warn("check refresh_token failed: %s", err);
+		logger.Warn("check refresh_token failed: %s", err)
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
