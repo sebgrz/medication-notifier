@@ -58,7 +58,7 @@ func main() {
 	apiPush := router.Group("/api/push")
 	apiPush.Use(middleware.JwtAuthMiddleware())
 	{
-		apiPush.POST("register", handler.PushRegistration)
+		apiPush.POST("register", handler.PushTokenRegistration)
 	}
 
 	router.Run(":8080")

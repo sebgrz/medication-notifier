@@ -1,11 +1,14 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
+	"medication-notifier/data"
 	"medication-notifier/utils"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func (h *httpHandler) PushRegistration(ctx *gin.Context) {
+func (h *httpHandler) PushTokenRegistration(ctx *gin.Context) {
 	var req PushRegisterRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -17,7 +20,18 @@ func (h *httpHandler) PushRegistration(ctx *gin.Context) {
 		logErrorAndAbort(ctx, "push_registration failed, clientData is empty")
 		return
 	}
-	_ = clientDataAny.(utils.ClientInfo)
+	clientInfo := clientDataAny.(utils.ClientInfo)
+
+	err := h.pushTokenData.Add(data.PushToken{
+		UserId: clientInfo.Id,
+		Token:  req.Token,
+	})
+	if err != nil {
+		logErrorAndAbort(ctx, "push_registration failed, save token err: %s", err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }
 
 type PushRegisterRequest struct {
