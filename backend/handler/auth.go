@@ -48,7 +48,7 @@ func (h *httpHandler) AuthLogin(ctx *gin.Context) {
 		ClientInfo:     clientInfo.Name,
 		ClientId:       clientInfo.Id,
 	}
-	if err := h.tokenData.Add(token); err != nil {
+	if err := h.saveToken(&token); err != nil {
 		ctx.AbortWithStatus(http.StatusForbidden)
 		return
 	}
@@ -98,7 +98,7 @@ func (h *httpHandler) AuthRefreshToken(ctx *gin.Context) {
 		ClientInfo:     clientInfo.Name,
 		ClientId:       clientInfo.Id,
 	}
-	if err = h.tokenData.Add(newToken); err != nil {
+	if err = h.saveToken(&newToken); err != nil {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
@@ -131,6 +131,21 @@ func (h *httpHandler) AuthCreateAccount(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
+}
+
+func (h *httpHandler) saveToken(token *data.Token) error {
+	// save in cache db
+	if err := h.tokenData.Add(*token); err != nil {
+		return err
+	}
+
+	// save in activity log
+	return h.activityLogData.Add(
+		token.ClientId,
+		token.UserId,
+		crypto.HashString(token.Token),
+		token.ExpirationTime,
+	)
 }
 
 // generateTokens return authToken, refreshToken, expirationTimeOfRefreshToken and error

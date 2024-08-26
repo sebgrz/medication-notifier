@@ -24,8 +24,14 @@ func main() {
 	userDataService := db.NewDbUsersDataService(conn)
 	medicationDataService := db.NewDbMedicationDataService(conn)
 	pushTokenDataService := db.NewDbPushTokenDataService(conn)
+	activityLogDataService := db.NewDbActivityLogDataService(conn)
 	tokenDataService := db.NewDbTokenDataService("localhost:6379", "")
-	handler := handler.New(&userDataService, &tokenDataService, &medicationDataService, &pushTokenDataService)
+	handler := handler.New(&userDataService,
+		&tokenDataService,
+		&medicationDataService,
+		&pushTokenDataService,
+		&activityLogDataService,
+	)
 
 	router := gin.New()
 	router.Use(cors.New(cors.Config{

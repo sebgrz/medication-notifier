@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"medication-notifier/crypto"
 	"medication-notifier/data"
 	"time"
 
@@ -32,7 +33,8 @@ func NewDbTokenDataService(address, password string) DbTokenDataService {
 
 func (s *DbTokenDataService) Add(token data.Token) error {
 	ctx := context.Background()
-	key := fmt.Sprintf(TOKEN_KEY, token.Token, token.ClientId)
+	tokenHash := crypto.HashString(token.Token)
+	key := fmt.Sprintf(TOKEN_KEY, tokenHash, token.ClientId)
 	jsonToken, _ := json.Marshal(token)
 	err := s.client.SetArgs(ctx, key, string(jsonToken), redis.SetArgs{
 		Mode:     "",
@@ -53,7 +55,8 @@ func (s *DbTokenDataService) Add(token data.Token) error {
 
 func (s *DbTokenDataService) FindByToken(token string, clientId string) (*data.Token, error) {
 	ctx := context.Background()
-	key := fmt.Sprintf(TOKEN_KEY, token, clientId)
+	tokenHash := crypto.HashString(token)
+	key := fmt.Sprintf(TOKEN_KEY, tokenHash, clientId)
 	cmd := s.client.Get(ctx, key)
 	if cmd.Err() == redis.Nil {
 		return nil, errors.New("not found")
@@ -80,7 +83,8 @@ func (s *DbTokenDataService) RemoveAllByUserId(string) error {
 
 func (s *DbTokenDataService) RemoveByToken(token string, clientId string) error {
 	ctx := context.Background()
-	key := fmt.Sprintf(TOKEN_KEY, token, clientId)
+	tokenHash := crypto.HashString(token)
+	key := fmt.Sprintf(TOKEN_KEY, tokenHash, clientId)
 	s.client.Del(ctx, key)
 
 	return nil

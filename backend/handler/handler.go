@@ -9,18 +9,25 @@ import (
 )
 
 type httpHandler struct {
-	userData       data.UsersDataService
-	tokenData      data.TokenDataService
-	medicationData data.MedicationDataService
-	pushTokenData  data.PushTokenDataService
+	userData        data.UsersDataService
+	tokenData       data.TokenDataService
+	medicationData  data.MedicationDataService
+	pushTokenData   data.PushTokenDataService
+	activityLogData data.ActivityLogDataService
 }
 
-func New(userData data.UsersDataService, tokenData data.TokenDataService, medicationData data.MedicationDataService, pushTokenData data.PushTokenDataService) *httpHandler {
+func New(userData data.UsersDataService,
+	tokenData data.TokenDataService,
+	medicationData data.MedicationDataService,
+	pushTokenData data.PushTokenDataService,
+	activityLogData data.ActivityLogDataService,
+) *httpHandler {
 	return &httpHandler{
 		userData,
 		tokenData,
 		medicationData,
 		pushTokenData,
+		activityLogData,
 	}
 }
 
