@@ -7,7 +7,7 @@ func Init() {
 }
 
 func Info(msg string, args ...any) {
-	logrus.Info(msg, args)
+	logrus.Infof(msg, args...)
 }
 
 func Warn(msg string, args ...any) {

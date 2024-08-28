@@ -49,6 +49,7 @@ func (h *httpHandler) AuthLogin(ctx *gin.Context) {
 		ClientId:       clientInfo.Id,
 	}
 	if err := h.saveToken(&token); err != nil {
+		logger.Error("save token failed, err: %s", err)
 		ctx.AbortWithStatus(http.StatusForbidden)
 		return
 	}
