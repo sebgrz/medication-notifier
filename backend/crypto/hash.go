@@ -10,5 +10,5 @@ func HashString(value string) string {
 	hash.Write([]byte(value))
 	bytes := hash.Sum(nil)
 
-	return fmt.Sprintf("%x\n", bytes)
+	return fmt.Sprintf("%x", bytes)
 }
