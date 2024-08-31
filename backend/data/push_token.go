@@ -1,9 +1,10 @@
 package data
 
 type PushToken struct {
-	Id     string
-	UserId string
-	Token  string
+	Id       string
+	ClientId string
+	UserId   string
+	Token    string
 }
 
 type PushTokenDataService interface {

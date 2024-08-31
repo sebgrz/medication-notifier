@@ -19,10 +19,11 @@ func NewDbPushTokenDataService(conn *pgxpool.Pool) DbPushTokenDataService {
 }
 
 func (s *DbPushTokenDataService) Add(pushToken data.PushToken) error {
-	sql := "insert into med.push_token(user_id, token) values ($1, $2)"
+	sql := "insert into med.push_token(client_id, user_id, token) values ($1, $2, $3)"
 	_, err := s.conn.Exec(
 		context.Background(),
 		sql,
+		pushToken.ClientId,
 		pushToken.UserId,
 		pushToken.Token,
 	)
@@ -31,7 +32,7 @@ func (s *DbPushTokenDataService) Add(pushToken data.PushToken) error {
 
 func (s *DbPushTokenDataService) FindByUserId(userId string) []data.PushToken {
 	sql := `
-	select id, user_id, token from med.push_token
+	select id, client_id, user_id, token from med.push_token
 	where user_id=$1
 	`
 	result := []data.PushToken{}
@@ -43,16 +44,18 @@ func (s *DbPushTokenDataService) FindByUserId(userId string) []data.PushToken {
 
 	for rows.Next() {
 		var id string
+		var clientId string
 		var userId string
 		var token string
-		if err := rows.Scan(&id, &userId, &token); err != nil {
+		if err := rows.Scan(&id, &clientId, &userId, &token); err != nil {
 			logger.Error("fetch push_token by userId scan failed, err: %s", err)
 			return []data.PushToken{}
 		}
 		result = append(result, data.PushToken{
-			Id:     id,
-			UserId: userId,
-			Token:  token,
+			Id:       id,
+			ClientId: clientId,
+			UserId:   userId,
+			Token:    token,
 		})
 	}
 

@@ -22,9 +22,12 @@ func (h *httpHandler) PushTokenRegistration(ctx *gin.Context) {
 	}
 	clientInfo := clientDataAny.(utils.ClientInfo)
 
+	userId := ctx.GetString(utils.USER_ID_CONST)
+
 	err := h.pushTokenData.Add(data.PushToken{
-		UserId: clientInfo.Id,
-		Token:  req.Token,
+		ClientId: clientInfo.Id,
+		UserId:   userId,
+		Token:    req.Token,
 	})
 	if err != nil {
 		logErrorAndAbort(ctx, "push_registration failed, save token err: %s", err)

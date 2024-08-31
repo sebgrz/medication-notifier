@@ -16,7 +16,7 @@ func (j *Job) activityLogCleanupJob() {
 			if err.Error() == "not found" {
 				logger.Info("activity_log removing token_hash: %s client_id: %s", activity.RefreshTokenHash, activity.ClientId)
 
-				if removeErr := j.activityLogData.RemoveByClientId(activity.ClientId); removeErr != nil {
+				if removeErr := j.activityLogData.RemoveByUserIdAndClientId(activity.UserId, activity.ClientId); removeErr != nil {
 					logger.Warn("remove activity log by client_id %s failed, err: %s", activity.ClientId, removeErr)
 				}
 			}
