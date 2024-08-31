@@ -32,6 +32,13 @@ func (s *DbActivityLogDataService) Add(clientId, userId, refreshTokenHash string
 	return err
 }
 
+func (s *DbActivityLogDataService) RemoveByUserIdAndClientId(userId, clientId string) error {
+	sql := "delete from med.login_activity_log where user_id=$1 and client_id=$2"
+	_, err := s.conn.Exec(context.Background(), sql, userId, clientId)
+
+	return err
+}
+
 func (s *DbActivityLogDataService) FetchAllNewestGroupedByClientId() []data.ActivityLog {
 	sql := `
 	select
@@ -47,7 +54,7 @@ func (s *DbActivityLogDataService) FetchAllNewestGroupedByClientId() []data.Acti
 			refresh_token_hash,
 			expire_time,
 			row_number() over
-				(partition by user_id order by expire_time desc)
+				(partition by client_id, user_id order by expire_time desc)
 				as row_number
 		from
 			med.login_activity_log

@@ -53,6 +53,26 @@ func (s *DbTokenDataService) Add(token data.Token) error {
 	return nil
 }
 
+func (s *DbTokenDataService) FindByTokenHash(tokenHash string, clientId string) (*data.Token, error) {
+	ctx := context.Background()
+	key := fmt.Sprintf(TOKEN_KEY, tokenHash, clientId)
+	cmd := s.client.Get(ctx, key)
+	if cmd.Err() == redis.Nil {
+		return nil, errors.New("not found")
+	}
+
+	if cmd.Err() != nil {
+		return nil, cmd.Err()
+	}
+
+	var tokenData data.Token
+	if err := json.Unmarshal([]byte(cmd.Val()), &tokenData); err != nil {
+		return nil, err
+	}
+
+	return &tokenData, nil
+}
+
 func (s *DbTokenDataService) FindByToken(token string, clientId string) (*data.Token, error) {
 	ctx := context.Background()
 	tokenHash := crypto.HashString(token)

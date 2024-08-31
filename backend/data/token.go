@@ -10,6 +10,7 @@ type Token struct {
 
 type TokenDataService interface {
 	Add(Token) error
+	FindByTokenHash(string, string) (*Token, error)
 	FindByToken(string, string) (*Token, error)
 	FindByUserId(string) []Token
 	RemoveAllByUserId(string) error

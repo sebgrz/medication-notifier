@@ -10,4 +10,5 @@ type ActivityLog struct {
 type ActivityLogDataService interface {
 	Add(clientId, userId, refreshTokenHash string, expireTime int64) error
 	FetchAllNewestGroupedByClientId() []ActivityLog
+	RemoveByClientId(string) error
 }

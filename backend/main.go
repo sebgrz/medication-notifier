@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"medication-notifier/data/db"
 	"medication-notifier/handler"
+	"medication-notifier/job"
 	"medication-notifier/middleware"
 
 	"github.com/gin-contrib/cors"
@@ -30,6 +31,10 @@ func main() {
 		&tokenDataService,
 		&medicationDataService,
 		&pushTokenDataService,
+		&activityLogDataService,
+	)
+	jobs := job.New(
+		&tokenDataService,
 		&activityLogDataService,
 	)
 
@@ -67,5 +72,6 @@ func main() {
 		apiPush.POST("register", handler.PushTokenRegistration)
 	}
 
+	jobs.Start()
 	router.Run(":8080")
 }
