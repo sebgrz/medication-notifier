@@ -2,9 +2,11 @@
 
 import MedicationsPanel, { Medication } from "@/components/medicationsPanel";
 import { useApiManager } from "@/hooks/useApiManager";
+import { useFcmToken } from "@/hooks/useFcmToken";
 import { useCallback, useEffect, useState } from "react";
 
 const Index = () => {
+  const { message } = useFcmToken();
   const api = useApiManager();
   const [medications, setMedications] = useState<Medication[]>([]);
 
@@ -17,6 +19,10 @@ const Index = () => {
     loadMedications();
   }, [loadMedications]);
 
+
+  useEffect(() => {
+    console.info(message);
+  }, [message]);
 
   return (
     <main className="flex">

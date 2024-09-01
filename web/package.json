@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "firebase": "^10.13.1",
     "formik": "^2.4.6",
     "next": "14.2.5",
+    "next-sw": "^2.4.0",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -18,6 +20,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
